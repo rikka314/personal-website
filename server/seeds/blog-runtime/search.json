@@ -1,0 +1,62 @@
+{
+  "generatedAt": "2026-03-25T07:02:14.544Z",
+  "entries": [
+    {
+      "id": "quant-strategy-platform",
+      "kind": "project",
+      "url": "https://gfm156.com/strategy/",
+      "featured": true,
+      "searchText": "quantitative finance analysis platform a modular streamlit platform for factor-based stock analysis, strategy backtesting, parameter optimization, and portfolio exploration, deployed on an ubuntu cloud server. this project taught me how to connect data pipelines, quantitative metrics, optimization loops, and deployment concerns into one usable research tool. python streamlit akshare optuna 量化金融分析平台 一个基于 streamlit 的模块化量化平台，整合了 akshare 数据、10 因子评分、策略回测、参数优化和组合分析，并已部署到 ubuntu 云服务器。 这个项目让我系统练习了数据管线、量化指标、优化流程和部署链路，开始把分析想法整理成真正可用的研究工具。 python streamlit akshare optuna live project 在线项目",
+      "translations": {
+        "en": {
+          "title": "Quantitative finance analysis platform",
+          "excerpt": "A modular Streamlit platform for factor-based stock analysis, strategy backtesting, parameter optimization, and portfolio exploration, deployed on an Ubuntu cloud server.",
+          "meta": "Live project"
+        },
+        "zh": {
+          "title": "量化金融分析平台",
+          "excerpt": "一个基于 Streamlit 的模块化量化平台，整合了 AkShare 数据、10 因子评分、策略回测、参数优化和组合分析，并已部署到 Ubuntu 云服务器。",
+          "meta": "在线项目"
+        }
+      }
+    },
+    {
+      "id": "fingpt-sentiment-reproduction",
+      "kind": "project",
+      "url": "/projects",
+      "featured": false,
+      "searchText": "fingpt financial sentiment reproduction a local reproduction of the fingpt v3 sentiment workflow in wsl/ubuntu, including 4-bit qlora fine-tuning on financial phrasebank and inference through both hugging face and ollama backends. this project gave me direct experience with gpu environment setup, lightweight fine-tuning, local model execution, and benchmark-style evaluation using weighted f1. wsl/ubuntu qlora llama-2-7b ollama fingpt 金融情感分析复现 在 wsl/ubuntu 环境中本地复现 fingpt v3 情感分析流程，包含 financial phrasebank 上的 4-bit qlora 微调，以及 hugging face 与 ollama 双后端推理。 这部分工作让我真正接触到 gpu 环境配置、轻量微调、本地模型运行和加权 f1 评测，工程理解比只看 notebook 更扎实。 wsl/ubuntu qlora llama-2-7b ollama independent study 独立复现",
+      "translations": {
+        "en": {
+          "title": "FinGPT financial sentiment reproduction",
+          "excerpt": "A local reproduction of the FinGPT v3 sentiment workflow in WSL/Ubuntu, including 4-bit QLoRA fine-tuning on Financial PhraseBank and inference through both Hugging Face and Ollama backends.",
+          "meta": "Independent study"
+        },
+        "zh": {
+          "title": "FinGPT 金融情感分析复现",
+          "excerpt": "在 WSL/Ubuntu 环境中本地复现 FinGPT v3 情感分析流程，包含 Financial PhraseBank 上的 4-bit QLoRA 微调，以及 Hugging Face 与 Ollama 双后端推理。",
+          "meta": "独立复现"
+        }
+      }
+    },
+    {
+      "id": "shipping-simulation-game",
+      "kind": "project",
+      "url": "https://github.com/rikka314/AIE-shipgame",
+      "featured": false,
+      "searchText": "shipping simulation game a turn-based shipping simulation game built with a custom python engine, a tkinter desktop ui, a unified command queue, and mysql-backed persistent state. building it strengthened my understanding of state management, cross-module system behavior, packaging, and the tradeoffs of making a complex simulation usable. python tkinter mysql pyinstaller 航运模拟游戏 一个回合制航运贸易模拟项目，包含自定义 python 游戏引擎、tkinter 桌面界面、统一指令队列，以及基于 mysql 的持久化状态管理。 这个项目让我更系统地理解状态管理、跨模块交互、桌面打包和复杂模拟系统如何被做成可实际使用的软件。 python tkinter mysql pyinstaller co-developed 协作开发",
+      "translations": {
+        "en": {
+          "title": "Shipping simulation game",
+          "excerpt": "A turn-based shipping simulation game built with a custom Python engine, a Tkinter desktop UI, a unified command queue, and MySQL-backed persistent state.",
+          "meta": "Co-developed"
+        },
+        "zh": {
+          "title": "航运模拟游戏",
+          "excerpt": "一个回合制航运贸易模拟项目，包含自定义 Python 游戏引擎、Tkinter 桌面界面、统一指令队列，以及基于 MySQL 的持久化状态管理。",
+          "meta": "协作开发"
+        }
+      }
+    }
+  ]
+}

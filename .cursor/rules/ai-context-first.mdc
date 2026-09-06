@@ -1,0 +1,12 @@
+---
+description: Read AI_CONTEXT.md before substantial work in this repository and update it only when project-level facts change.
+globs: []
+alwaysApply: true
+---
+
+- Read `AI_CONTEXT.md` in the repository root before substantial exploration, planning, code edits, or content edits.
+- Treat `AI_CONTEXT.md` as the compact project source of truth for architecture, UI constraints, deployment, routes, content workflow, and collaboration conventions.
+- Especially respect the UI design guardrails in `AI_CONTEXT.md`; do not add features with a mismatched visual language.
+- If the task changes project-level facts, update `AI_CONTEXT.md` before finishing.
+- Typical reasons to update it: new routes, major file moves, design-system changes, deployment changes, publishing workflow changes, or new collaboration rules.
+- Do not update `AI_CONTEXT.md` for small local fixes that do not affect how future agents should understand the project.
