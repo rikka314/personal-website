@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Github } from 'lucide-react'
 import { Route, Routes } from 'react-router-dom'
 import { useLocale } from '../context/useLocale'
+import Preferences from '../components/Preferences'
 import { getAdminLoginUrl } from '../lib/site'
 import AdminDashboard from './AdminDashboard'
 import AdminEditor from './AdminEditor'
@@ -124,6 +125,7 @@ function LoginScreen({
 }) {
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const isZh = locale === 'zh'
 
   const handleSubmit = async (event) => {
@@ -134,22 +136,30 @@ function LoginScreen({
     }
 
     setErrorMessage('')
+    setIsSubmitting(true)
 
     try {
       await onPasswordSubmit(password)
       setPassword('')
     } catch (error) {
-      setErrorMessage(error.message || (isZh ? '登录失败。' : 'Sign-in failed.'))
+      setErrorMessage(
+        error.message || (isZh ? '登录失败。' : 'Sign-in failed.'),
+      )
     }
   }
 
   return (
     <section className="section-shell">
       <div className="page-shell">
-        <div className="panel mx-auto max-w-2xl p-8 md:p-10">
+        <div className="admin-login">
+          <div className="mb-8 flex justify-end">
+            <Preferences />
+          </div>
           <p className="eyebrow">{isZh ? '博客后台' : 'Blog Admin'}</p>
           <h1 className="mt-3 text-4xl text-text md:text-5xl">
-            <span className="font-display italic">{isZh ? '博客写作入口' : 'Writing surface'}</span>
+            <span className="font-display">
+              {isZh ? '博客写作入口' : 'Writing surface'}
+            </span>
           </h1>
           <p className="mt-5 text-base leading-8 text-muted">
             {isZh
@@ -159,32 +169,56 @@ function LoginScreen({
 
           {passwordAuthConfigured ? (
             <form className="mt-8 grid gap-3" onSubmit={handleSubmit}>
-              <input
-                autoComplete="current-password"
-                className="rounded-2xl border border-border bg-card/80 px-4 py-3 text-sm text-text outline-none placeholder:text-muted"
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder={isZh ? '输入后台密码' : 'Enter the admin password'}
-                type="password"
-                value={password}
-              />
-              {errorMessage ? <p className="text-sm text-accent-hi">{errorMessage}</p> : null}
-              <button className="button-primary justify-center" type="submit">
-                {isZh ? '使用密码登录' : 'Sign in with password'}
+              <label className="blog-select-shell">
+                <span>{isZh ? '后台密码' : 'Admin password'}</span>
+                <input
+                  autoComplete="current-password"
+                  className="form-input"
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder={
+                    isZh ? '输入后台密码' : 'Enter the admin password'
+                  }
+                  type="password"
+                  value={password}
+                />
+              </label>
+              {errorMessage ? (
+                <p role="alert" className="feedback feedback-error">
+                  {errorMessage}
+                </p>
+              ) : null}
+              <button
+                className="button-primary justify-center"
+                disabled={isSubmitting}
+                type="submit"
+              >
+                {isSubmitting
+                  ? isZh
+                    ? '正在登录…'
+                    : 'Signing in…'
+                  : isZh
+                    ? '使用密码登录'
+                    : 'Sign in with password'}
               </button>
             </form>
           ) : null}
 
           {oauthConfigured ? (
             <a className="button-secondary mt-4" href={getAdminLoginUrl()}>
-              <Github size={16} />
+              <Github size={16} aria-hidden="true" />
               {isZh ? '使用 GitHub 登录' : 'Sign in with GitHub'}
             </a>
           ) : null}
 
           {!authConfigured ? (
-            <div aria-disabled="true" className="button-secondary mt-8 cursor-not-allowed opacity-70">
-              <Github size={16} />
-              {isZh ? '服务器仍需补齐认证配置' : 'Server authentication still needs configuration'}
+            <div
+              aria-disabled="true"
+              className="button-secondary mt-8 cursor-not-allowed opacity-70"
+            >
+              <Github size={16} aria-hidden="true" />
+              {isZh
+                ? '服务器仍需补齐认证配置'
+                : 'Server authentication still needs configuration'}
             </div>
           ) : null}
         </div>
@@ -198,6 +232,7 @@ export default function AdminApp() {
   const copy = copyByLocale[locale]
   const [session, setSession] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [sessionError, setSessionError] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -212,6 +247,7 @@ export default function AdminApp() {
         }
       } catch {
         if (!cancelled) {
+          setSessionError(true)
           setSession({
             authenticated: false,
             authConfigured: true,
@@ -247,7 +283,35 @@ export default function AdminApp() {
   }
 
   if (isLoading) {
-    return <LoginScreen authConfigured locale={locale} />
+    return (
+      <section className="section-shell">
+        <div className="page-shell admin-login" role="status">
+          <p className="eyebrow">{copy.eyebrow}</p>
+          <p className="mt-6 text-muted">{copy.loading}</p>
+        </div>
+      </section>
+    )
+  }
+
+  if (sessionError) {
+    return (
+      <section className="section-shell">
+        <div className="page-shell admin-login">
+          <p role="alert" className="feedback feedback-error">
+            {locale === 'zh'
+              ? '暂时无法连接写作后台，请重试。'
+              : 'The writing service is unavailable. Please try again.'}
+          </p>
+          <button
+            className="button-secondary"
+            type="button"
+            onClick={() => window.location.reload()}
+          >
+            {locale === 'zh' ? '重试' : 'Try again'}
+          </button>
+        </div>
+      </section>
+    )
   }
 
   if (!session?.authenticated) {
@@ -265,9 +329,18 @@ export default function AdminApp() {
   return (
     <AdminShell copy={copy} onLogout={handleLogout} session={session}>
       <Routes>
-        <Route element={<AdminDashboard copy={copy} locale={locale} />} path="/" />
-        <Route element={<AdminEditor copy={copy} locale={locale} />} path="/articles/new" />
-        <Route element={<AdminEditor copy={copy} locale={locale} />} path="/articles/:articleId" />
+        <Route
+          element={<AdminDashboard copy={copy} locale={locale} />}
+          path="/"
+        />
+        <Route
+          element={<AdminEditor copy={copy} locale={locale} />}
+          path="/articles/new"
+        />
+        <Route
+          element={<AdminEditor copy={copy} locale={locale} />}
+          path="/articles/:articleId"
+        />
       </Routes>
     </AdminShell>
   )

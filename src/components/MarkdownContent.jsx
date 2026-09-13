@@ -12,11 +12,17 @@ import markdown from 'react-syntax-highlighter/dist/esm/languages/prism/markdown
 import python from 'react-syntax-highlighter/dist/esm/languages/prism/python'
 import tsx from 'react-syntax-highlighter/dist/esm/languages/prism/tsx'
 import typescript from 'react-syntax-highlighter/dist/esm/languages/prism/typescript'
-import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import {
+  oneDark,
+  oneLight,
+} from 'react-syntax-highlighter/dist/esm/styles/prism'
 import rehypeKatex from 'rehype-katex'
 import rehypeSlug from 'rehype-slug'
+import rehypeHeadingIds from '../lib/blog/headingIds'
+import { extractHeadings } from '../lib/blog/runtime'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
+import { useLocale } from '../context/useLocale'
 import { useTheme } from '../context/useTheme'
 
 SyntaxHighlighter.registerLanguage('bash', bash)
@@ -31,6 +37,7 @@ SyntaxHighlighter.registerLanguage('typescript', typescript)
 
 function CopyCodeButton({ value }) {
   const [copied, setCopied] = useState(false)
+  const { locale } = useLocale()
 
   const handleCopy = async () => {
     try {
@@ -43,24 +50,39 @@ function CopyCodeButton({ value }) {
   }
 
   return (
-    <button
-      className="blog-code-copy"
-      onClick={handleCopy}
-      type="button"
-    >
-      {copied ? <Check size={14} /> : <Copy size={14} />}
-      {copied ? 'Copied' : 'Copy'}
+    <button className="blog-code-copy" onClick={handleCopy} type="button">
+      {copied ? (
+        <Check size={14} aria-hidden="true" />
+      ) : (
+        <Copy size={14} aria-hidden="true" />
+      )}
+      <span aria-live="polite">
+        {locale === 'zh'
+          ? copied
+            ? '已复制'
+            : '复制'
+          : copied
+            ? 'Copied'
+            : 'Copy'}
+      </span>
     </button>
   )
 }
 
-export default function MarkdownContent({ markdown }) {
+export default function MarkdownContent({ markdown, headings }) {
   const { isDark } = useTheme()
 
   return (
     <div className="prose-blog">
       <ReactMarkdown
-        rehypePlugins={[rehypeSlug, rehypeKatex]}
+        rehypePlugins={[
+          rehypeSlug,
+          [
+            rehypeHeadingIds,
+            { headings: headings ?? extractHeadings(markdown), markdown },
+          ],
+          rehypeKatex,
+        ]}
         remarkPlugins={[remarkGfm, remarkMath]}
         components={{
           a: ({ href, children }) => (
@@ -72,11 +94,18 @@ export default function MarkdownContent({ markdown }) {
               {children}
             </a>
           ),
-          code({ children, className, inline, ...props }) {
+          pre({ children }) {
+            return <>{children}</>
+          },
+          code({ children, className, node, ...props }) {
             const rawValue = String(children).replace(/\n$/, '')
             const language = className?.replace('language-', '') || 'text'
 
-            if (inline) {
+            if (
+              !className &&
+              node?.position?.start.line === node?.position?.end.line &&
+              !String(children).includes('\n')
+            ) {
               return (
                 <code className={className} {...props}>
                   {children}
@@ -86,7 +115,10 @@ export default function MarkdownContent({ markdown }) {
 
             return (
               <div className="blog-code-shell">
-                <CopyCodeButton value={rawValue} />
+                <div className="blog-code-toolbar">
+                  <span>{language}</span>
+                  <CopyCodeButton value={rawValue} />
+                </div>
                 <SyntaxHighlighter
                   {...props}
                   customStyle={{ margin: 0, background: 'transparent' }}
@@ -98,8 +130,20 @@ export default function MarkdownContent({ markdown }) {
               </div>
             )
           },
-          img: ({ src, alt }) => <img alt={alt ?? ''} className="blog-image" src={src} />,
-          table: ({ children }) => <div className="blog-table-shell"><table>{children}</table></div>,
+          img: ({ src, alt }) => (
+            <img
+              alt={alt ?? ''}
+              className="blog-image"
+              loading="lazy"
+              decoding="async"
+              src={src}
+            />
+          ),
+          table: ({ children }) => (
+            <div className="blog-table-shell">
+              <table>{children}</table>
+            </div>
+          ),
         }}
       >
         {markdown}

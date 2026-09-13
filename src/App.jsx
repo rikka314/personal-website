@@ -69,7 +69,7 @@ function SiteLayout() {
       <ScrollToTop />
       <Analytics />
       <Navbar />
-      <main className="pt-20 md:pt-24">
+      <main id="main-content" tabIndex={-1} className="site-main">
         <AnimatedOutlet />
       </main>
       <Footer />

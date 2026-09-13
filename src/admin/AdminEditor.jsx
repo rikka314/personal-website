@@ -81,6 +81,7 @@ export default function AdminEditor({ copy, locale }) {
   const { articleId = 'new' } = useParams()
   const navigate = useNavigate()
   const textareaRef = useRef(null)
+  const persistedIdRef = useRef(null)
   const [article, setArticle] = useState(blankArticle)
   const [tagsInput, setTagsInput] = useState('')
   const [columns, setColumns] = useState([])
@@ -88,15 +89,23 @@ export default function AdminEditor({ copy, locale }) {
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState('')
+  const [messageKind, setMessageKind] = useState('success')
+  const [editorView, setEditorView] = useState('edit')
 
   const isNewArticle = articleId === 'new'
 
   useEffect(() => {
+    if (persistedIdRef.current === articleId) {
+      persistedIdRef.current = null
+      return
+    }
     let cancelled = false
 
     async function hydrate() {
+      setEditorView('edit')
       setIsLoading(true)
       setMessage('')
+      setMessageKind('success')
 
       try {
         const columnPayload = await listColumns()
@@ -139,7 +148,11 @@ export default function AdminEditor({ copy, locale }) {
   }, [articleId, isNewArticle])
 
   const columnOptions = useMemo(
-    () => columns.map((column) => ({ slug: column.slug, label: column.name?.[locale] ?? column.slug })),
+    () =>
+      columns.map((column) => ({
+        slug: column.slug,
+        label: column.name?.[locale] ?? column.slug,
+      })),
     [columns, locale],
   )
 
@@ -178,6 +191,7 @@ export default function AdminEditor({ copy, locale }) {
       const created = await createArticle(payload)
       setArticle(created.article)
       setTagsInput((created.article.tags ?? []).join(', '))
+      persistedIdRef.current = created.article.id
       navigate(`/articles/${created.article.id}`, { replace: true })
       return created.article
     }
@@ -191,11 +205,17 @@ export default function AdminEditor({ copy, locale }) {
   const handleSave = async () => {
     setIsSaving(true)
     setMessage('')
+    setMessageKind('success')
 
     try {
       const savedArticle = await ensurePersistedArticle()
-      setMessage(locale === 'zh' ? `已保存：${savedArticle.title}` : `Saved: ${savedArticle.title}`)
+      setMessage(
+        locale === 'zh'
+          ? `已保存：${savedArticle.title}`
+          : `Saved: ${savedArticle.title}`,
+      )
     } catch (nextError) {
+      setMessageKind('error')
       setMessage(nextError.message)
     } finally {
       setIsSaving(false)
@@ -205,6 +225,7 @@ export default function AdminEditor({ copy, locale }) {
   const handlePublish = async () => {
     setIsSaving(true)
     setMessage('')
+    setMessageKind('success')
 
     try {
       const savedArticle = await ensurePersistedArticle()
@@ -212,6 +233,7 @@ export default function AdminEditor({ copy, locale }) {
       setArticle(published.article)
       setMessage(locale === 'zh' ? '文章已发布。' : 'Article published.')
     } catch (nextError) {
+      setMessageKind('error')
       setMessage(nextError.message)
     } finally {
       setIsSaving(false)
@@ -225,12 +247,16 @@ export default function AdminEditor({ copy, locale }) {
 
     setIsSaving(true)
     setMessage('')
+    setMessageKind('success')
 
     try {
       const unpublished = await unpublishArticle(article.id)
       setArticle(unpublished.article)
-      setMessage(locale === 'zh' ? '文章已撤回为草稿。' : 'Article moved back to draft.')
+      setMessage(
+        locale === 'zh' ? '文章已撤回为草稿。' : 'Article moved back to draft.',
+      )
     } catch (nextError) {
+      setMessageKind('error')
       setMessage(nextError.message)
     } finally {
       setIsSaving(false)
@@ -243,17 +269,23 @@ export default function AdminEditor({ copy, locale }) {
       return
     }
 
-    if (!window.confirm(locale === 'zh' ? '确认删除这篇文章？' : 'Delete this article?')) {
+    if (
+      !window.confirm(
+        locale === 'zh' ? '确认删除这篇文章？' : 'Delete this article?',
+      )
+    ) {
       return
     }
 
     setIsSaving(true)
     setMessage('')
+    setMessageKind('success')
 
     try {
       await deleteArticle(article.id)
       navigate('/')
     } catch (nextError) {
+      setMessageKind('error')
       setMessage(nextError.message)
       setIsSaving(false)
     }
@@ -266,16 +298,24 @@ export default function AdminEditor({ copy, locale }) {
 
     setIsSaving(true)
     setMessage('')
+    setMessageKind('success')
 
     try {
-      const currentArticle = article.id ? article : await ensurePersistedArticle()
+      const currentArticle = article.id
+        ? article
+        : await ensurePersistedArticle()
       const uploaded = await uploadAsset({
         articleId: currentArticle.id,
         file,
       })
-      applyMarkdownTransform(`![${file.name}](${uploaded.asset.url})`)
-      setMessage(locale === 'zh' ? '图片已上传并插入正文。' : 'Image uploaded and inserted.')
+      applyMarkdownTransform(`\n\n![${file.name}](${uploaded.asset.url})\n\n`)
+      setMessage(
+        locale === 'zh'
+          ? '图片已上传并插入正文。'
+          : 'Image uploaded and inserted.',
+      )
     } catch (nextError) {
+      setMessageKind('error')
       setMessage(nextError.message)
     } finally {
       setIsSaving(false)
@@ -303,6 +343,7 @@ export default function AdminEditor({ copy, locale }) {
       }))
       setNewColumnName('')
     } catch (nextError) {
+      setMessageKind('error')
       setMessage(nextError.message)
     }
   }
@@ -320,21 +361,35 @@ export default function AdminEditor({ copy, locale }) {
 
   return (
     <div className="page-shell">
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
+      <div className="editor-action-bar">
         <div>
           <p className="eyebrow">{copy.editorLabel}</p>
-          <h2 className="mt-2 text-4xl text-text">
-            <span className="font-display italic">{copy.editorTitle}</span>
-          </h2>
+          <h1 className="text-lg font-semibold text-text">
+            {copy.editorTitle}
+          </h1>
         </div>
 
-        <div className="flex flex-wrap gap-3">
-          <button className="button-secondary" disabled={isSaving} onClick={handleSave} type="button">
-            <Save size={15} />
-            {copy.saveDraft}
+        <div className="editor-actions">
+          <button
+            className="button-secondary"
+            disabled={isSaving}
+            onClick={handleSave}
+            type="button"
+          >
+            <Save size={15} aria-hidden="true" />
+            {isSaving
+              ? locale === 'zh'
+                ? '处理中…'
+                : 'Working…'
+              : copy.saveDraft}
           </button>
-          <button className="button-primary" disabled={isSaving} onClick={handlePublish} type="button">
-            <Send size={15} />
+          <button
+            className="button-primary"
+            disabled={isSaving}
+            onClick={handlePublish}
+            type="button"
+          >
+            <Send size={15} aria-hidden="true" />
             {copy.publishNow}
           </button>
           {article.status === 'published' ? (
@@ -347,34 +402,54 @@ export default function AdminEditor({ copy, locale }) {
               {copy.unpublish}
             </button>
           ) : null}
-          <button className="button-secondary" disabled={isSaving} onClick={handleDelete} type="button">
-            <Trash2 size={15} />
+          <button
+            className="button-secondary button-danger"
+            disabled={isSaving}
+            onClick={handleDelete}
+            type="button"
+          >
+            <Trash2 size={15} aria-hidden="true" />
             {copy.delete}
           </button>
         </div>
       </div>
 
       {message ? (
-        <div className="panel mb-5 px-5 py-4 text-sm leading-7 text-muted">{message}</div>
+        <div
+          role={messageKind === 'error' ? 'alert' : 'status'}
+          className={`feedback ${messageKind === 'error' ? 'feedback-error' : ''}`}
+        >
+          {message}
+        </div>
       ) : null}
 
-      <div className="grid gap-5 xl:grid-cols-[420px_minmax(0,1fr)]">
-        <section className="panel p-6 md:p-7">
-          <div className="grid gap-4">
-            <label className="blog-select-shell">
-              <span>{copy.title}</span>
-              <input
-                onChange={(event) =>
-                  setArticle((current) => ({
-                    ...current,
-                    title: event.target.value,
-                    slug: current.slug || slugify(event.target.value, 'untitled-article'),
-                  }))
-                }
-                type="text"
-                value={article.title}
-              />
-            </label>
+      <div className="mb-6">
+        {' '}
+        <label className="blog-select-shell">
+          <span>{copy.title}</span>
+          <input
+            className="editor-title"
+            onChange={(event) =>
+              setArticle((current) => ({
+                ...current,
+                title: event.target.value,
+                slug:
+                  current.slug ||
+                  slugify(event.target.value, 'untitled-article'),
+              }))
+            }
+            type="text"
+            value={article.title}
+          />
+        </label>
+      </div>
+      <details className="article-settings">
+        <summary>{locale === 'zh' ? '文章设置' : 'Article settings'}</summary>
+        <div className="settings-grid">
+          <fieldset>
+            <legend>
+              {locale === 'zh' ? '基本信息' : 'Basic information'}
+            </legend>
 
             <label className="blog-select-shell">
               <span>{copy.slug}</span>
@@ -462,23 +537,34 @@ export default function AdminEditor({ copy, locale }) {
 
             <div className="flex gap-3">
               <input
-                className="min-w-0 flex-1 rounded-2xl border border-border bg-card px-4 py-3 text-sm text-text outline-none"
+                className="form-input flex-1"
+                aria-label={copy.newColumnPlaceholder}
                 onChange={(event) => setNewColumnName(event.target.value)}
                 placeholder={copy.newColumnPlaceholder}
                 type="text"
                 value={newColumnName}
               />
-              <button className="button-secondary" onClick={handleCreateColumn} type="button">
-                <Plus size={15} />
+              <button
+                className="button-secondary"
+                onClick={handleCreateColumn}
+                type="button"
+              >
+                <Plus size={15} aria-hidden="true" />
                 {copy.addColumn}
               </button>
             </div>
 
             <label className="blog-select-shell">
               <span>{copy.tags}</span>
-              <input onChange={(event) => setTagsInput(event.target.value)} type="text" value={tagsInput} />
+              <input
+                onChange={(event) => setTagsInput(event.target.value)}
+                type="text"
+                value={tagsInput}
+              />
             </label>
-
+          </fieldset>
+          <fieldset>
+            <legend>{locale === 'zh' ? '发布设置' : 'Publishing'}</legend>{' '}
             <label className="blog-select-shell">
               <span>{copy.coverImage}</span>
               <input
@@ -492,7 +578,6 @@ export default function AdminEditor({ copy, locale }) {
                 value={article.coverImage || ''}
               />
             </label>
-
             <label className="blog-select-shell">
               <span>{copy.publishDate}</span>
               <input
@@ -506,7 +591,6 @@ export default function AdminEditor({ copy, locale }) {
                 value={toDateTimeLocal(article.publishedAt)}
               />
             </label>
-
             <div className="grid gap-4 md:grid-cols-2">
               <label className="blog-toggle">
                 <input
@@ -537,7 +621,6 @@ export default function AdminEditor({ copy, locale }) {
                 />
               </label>
             </div>
-
             <label className="blog-toggle">
               <input
                 checked={article.enableComments}
@@ -551,7 +634,9 @@ export default function AdminEditor({ copy, locale }) {
               />
               <span>{copy.enableComments}</span>
             </label>
-
+          </fieldset>
+          <fieldset>
+            <legend>SEO</legend>{' '}
             <label className="blog-select-shell">
               <span>{copy.seoTitle}</span>
               <input
@@ -565,7 +650,6 @@ export default function AdminEditor({ copy, locale }) {
                 value={article.seoTitle}
               />
             </label>
-
             <label className="blog-select-shell">
               <span>{copy.seoDescription}</span>
               <textarea
@@ -579,72 +663,153 @@ export default function AdminEditor({ copy, locale }) {
                 value={article.seoDescription}
               />
             </label>
-          </div>
-        </section>
-
-        <section className="grid gap-5">
-          <div className="panel p-6 md:p-7">
-            <div className="flex flex-wrap items-center gap-3">
-              <button className="button-secondary" onClick={() => applyMarkdownTransform('## ')} type="button">
-                H2
-              </button>
-              <button className="button-secondary" onClick={() => applyMarkdownTransform('**', '**')} type="button">
-                Bold
-              </button>
-              <button className="button-secondary" onClick={() => applyMarkdownTransform('`', '`')} type="button">
-                Code
-              </button>
-              <button
-                className="button-secondary"
-                onClick={() => applyMarkdownTransform('\n```python\n', '\n```\n')}
-                type="button"
-              >
-                Code block
-              </button>
-              <button className="button-secondary" onClick={() => applyMarkdownTransform('$$\n', '\n$$')} type="button">
-                LaTeX
-              </button>
-              <label className="button-secondary">
-                <ImageUp size={15} />
-                {copy.uploadImage}
-                <input
-                  className="sr-only"
-                  onChange={(event) => handleAssetUpload(event.target.files?.[0] ?? null)}
-                  type="file"
-                />
-              </label>
-            </div>
-
-            <textarea
-              ref={textareaRef}
-              className="admin-editor-area mt-5"
-              onChange={(event) =>
-                setArticle((current) => ({
-                  ...current,
-                  contentMarkdown: event.target.value,
-                }))
+          </fieldset>
+        </div>
+      </details>
+      <div
+        className="editor-tabs"
+        role="tablist"
+        aria-label={locale === 'zh' ? '写作视图' : 'Writing view'}
+      >
+        {['edit', 'preview'].map((view) => (
+          <button
+            key={view}
+            className="editor-tab"
+            type="button"
+            role="tab"
+            aria-selected={editorView === view}
+            aria-controls={`editor-${view}-panel`}
+            tabIndex={editorView === view ? 0 : -1}
+            onClick={() => setEditorView(view)}
+            onKeyDown={(event) => {
+              if (
+                ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)
+              ) {
+                event.preventDefault()
+                const next =
+                  event.key === 'Home'
+                    ? 'edit'
+                    : event.key === 'End'
+                      ? 'preview'
+                      : editorView === 'edit'
+                        ? 'preview'
+                        : 'edit'
+                setEditorView(next)
+                event.currentTarget.parentElement.children[
+                  next === 'edit' ? 0 : 1
+                ].focus()
               }
-              value={article.contentMarkdown}
+            }}
+          >
+            {view === 'edit'
+              ? locale === 'zh'
+                ? '编辑'
+                : 'Edit'
+              : copy.previewLabel}
+          </button>
+        ))}
+      </div>
+      <section className="editor-workspace" data-view={editorView}>
+        <div
+          className="editor-pane"
+          id="editor-edit-panel"
+          role="region"
+          aria-label={locale === 'zh' ? 'Markdown 编辑' : 'Markdown editor'}
+        >
+          <div className="editor-toolbar">
+            <button
+              className="button-secondary"
+              onClick={() => applyMarkdownTransform('## ')}
+              type="button"
+            >
+              H2
+            </button>
+            <button
+              className="button-secondary"
+              onClick={() => applyMarkdownTransform('**', '**')}
+              type="button"
+            >
+              Bold
+            </button>
+            <button
+              className="button-secondary"
+              onClick={() => applyMarkdownTransform('`', '`')}
+              type="button"
+            >
+              Code
+            </button>
+            <button
+              className="button-secondary"
+              onClick={() => applyMarkdownTransform('\n```python\n', '\n```\n')}
+              type="button"
+            >
+              Code block
+            </button>
+            <button
+              className="button-secondary"
+              onClick={() => applyMarkdownTransform('$$\n', '\n$$')}
+              type="button"
+            >
+              LaTeX
+            </button>
+            <label className="button-secondary">
+              <ImageUp size={15} aria-hidden="true" />
+              {copy.uploadImage}
+              <input
+                className="sr-only"
+                aria-label={copy.uploadImage}
+                disabled={isSaving}
+                onChange={(event) =>
+                  handleAssetUpload(event.target.files?.[0] ?? null)
+                }
+                type="file"
+              />
+            </label>
+          </div>
+
+          <textarea
+            aria-label={
+              locale === 'zh'
+                ? '文章正文（Markdown）'
+                : 'Article body (Markdown)'
+            }
+            ref={textareaRef}
+            className="admin-editor-area mt-5"
+            onChange={(event) =>
+              setArticle((current) => ({
+                ...current,
+                contentMarkdown: event.target.value,
+              }))
+            }
+            value={article.contentMarkdown}
+          />
+        </div>
+
+        <div
+          className="preview-pane"
+          id="editor-preview-panel"
+          role="region"
+          aria-label={copy.previewLabel}
+        >
+          <div className="preview-heading">
+            <div>
+              <p className="tiny-label">{copy.previewLabel}</p>
+              <h3 className="mt-2 text-2xl font-semibold text-text">
+                {article.title || copy.previewTitle}
+              </h3>
+            </div>
+            <Link className="blog-inline-link" to="/">
+              {copy.backToDashboard}
+            </Link>
+          </div>
+
+          <div className="mt-6">
+            <MarkdownContent
+              markdown={article.contentMarkdown || copy.previewEmpty}
             />
           </div>
-
-          <div className="panel p-6 md:p-7">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="tiny-label">{copy.previewLabel}</p>
-                <h3 className="mt-2 text-2xl font-semibold text-text">{article.title || copy.previewTitle}</h3>
-              </div>
-              <Link className="blog-inline-link" to="/">
-                {copy.backToDashboard}
-              </Link>
-            </div>
-
-            <div className="mt-6">
-              <MarkdownContent markdown={article.contentMarkdown || copy.previewEmpty} />
-            </div>
-          </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   )
 }

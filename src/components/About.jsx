@@ -36,8 +36,7 @@ export default function About() {
   const copy =
     locale === 'zh'
       ? {
-          copy:
-            '我还处在本科早期阶段，但已经开始把研究兴趣落到可运行的系统、可复现的实验和结构化技术工作上。',
+          copy: '我还处在本科早期阶段，但已经开始把研究兴趣落到可运行的系统、可复现的实验和结构化技术工作上。',
           eyebrow: '关于',
           goalBody:
             '先在研究组中承担 baseline 复现、数据处理和实验支持，再逐步进入更深入的模型理解、论文阅读和研究设计。',
@@ -52,8 +51,7 @@ export default function About() {
           sideLabel: '我现在能承担什么',
         }
       : {
-          copy:
-            'I am still early in undergraduate study, but I am already turning research interest into runnable systems, reproducible experiments, and structured technical work.',
+          copy: 'I am still early in undergraduate study, but I am already turning research interest into runnable systems, reproducible experiments, and structured technical work.',
           eyebrow: 'About',
           goalBody:
             'Contribute first through baseline reproduction, data handling, and experiment support inside a research group, then grow into deeper model understanding, paper reading, and research design.',
@@ -64,7 +62,8 @@ export default function About() {
             'That is why I spent time on both a local FinGPT reproduction and a quantitative finance platform. The first pushed me through Llama-2-7B 4-bit QLoRA fine-tuning, FPB evaluation, and dual-backend inference in WSL/Ubuntu; the second turned AkShare data, 10-factor scoring, walk-forward backtesting, and parameter optimization into a usable Streamlit application.',
           intro3:
             'I also co-developed a shipping simulation game with a Tkinter interface and MySQL persistence, and I used MCM to practice modeling, sensitivity analysis, and technical writing. Together, those experiences gave me a more concrete sense of system decomposition, experiment tracking, and disciplined delivery.',
-          sectionTitle: 'An AI undergraduate already translating research interest into systems and experiments.',
+          sectionTitle:
+            'An AI undergraduate already translating research interest into systems and experiments.',
           sideLabel: 'Where I can contribute now',
         }
 
@@ -73,19 +72,23 @@ export default function About() {
       ? [
           {
             title: '研究方向',
-            description: '当前重点关注大语言模型、具身智能和计算机视觉，并希望尽早进入真实研究场景。',
+            description:
+              '当前重点关注大语言模型、具身智能和计算机视觉，并希望尽早进入真实研究场景。',
           },
           {
             title: '机器学习工具链',
-            description: '已经在用 scikit-learn、LightGBM、Optuna、Hugging Face Transformers 和 LoRA/QLoRA 做项目与复现。',
+            description:
+              '已经在用 scikit-learn、LightGBM、Optuna、Hugging Face Transformers 和 LoRA/QLoRA 做项目与复现。',
           },
           {
             title: '系统与部署',
-            description: '熟悉 Git、Linux、SSH、systemd、MySQL，以及从本地环境到云端部署的基本链路。',
+            description:
+              '熟悉 Git、Linux、SSH、systemd、MySQL，以及从本地环境到云端部署的基本链路。',
           },
           {
             title: '学术准备',
-            description: '参与过 MCM 建模并能阅读 Transformer、ResNet、AlexNet 等基础英文文献。',
+            description:
+              '参与过 MCM 建模并能阅读 Transformer、ResNet、AlexNet 等基础英文文献。',
           },
         ]
       : highlightCards
@@ -101,44 +104,47 @@ export default function About() {
       : contributionAreas
 
   return (
-    <section className="section-shell">
+    <section className="section-shell about-section">
       <div className="page-shell">
         <div className="section-header">
-          <p className="eyebrow">{copy.eyebrow}</p>
+          <p className="eyebrow">02 / {copy.eyebrow}</p>
           <h2 className="section-title">{copy.sectionTitle}</h2>
           <p className="section-copy">{copy.copy}</p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <article className="panel p-7 md:p-8">
+        <div className="about-columns">
+          <article className="min-w-0">
             <p className="text-base leading-8 text-muted">{copy.intro1}</p>
             <p className="mt-5 text-base leading-8 text-muted">{copy.intro2}</p>
             <p className="mt-5 text-base leading-8 text-muted">{copy.intro3}</p>
           </article>
 
-          <aside className="panel p-7 md:p-8">
+          <aside className="min-w-0">
             <p className="tiny-label">{copy.sideLabel}</p>
-            <ul className="mt-4 grid gap-3">
+            <ul className="contribution-list">
               {localizedContributionAreas.map((item) => (
-                <li key={item} className="soft-surface px-4 py-3 text-sm leading-6 text-muted">
-                  {item}
-                </li>
+                <li key={item}>{item}</li>
               ))}
             </ul>
 
-            <div className="soft-surface mt-6 p-5">
+            <div className="tint-surface mt-8 pl-5">
               <p className="tiny-label">{copy.goalLabel}</p>
-              <p className="mt-3 text-sm leading-7 text-text">{copy.goalBody}</p>
+              <p className="mt-3 text-sm leading-7 text-text">
+                {copy.goalBody}
+              </p>
             </div>
           </aside>
         </div>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="highlight-grid">
           {localizedHighlights.map((card) => (
-            <div key={card.title} className="panel panel-hover p-6">
-              <p className="tiny-label">{locale === 'zh' ? '重点' : 'Highlight'}</p>
-              <h3 className="mt-3 text-lg font-semibold text-text">{card.title}</h3>
-              <p className="mt-3 text-sm leading-7 text-muted">{card.description}</p>
+            <div key={card.title} className="highlight-item">
+              <h3 className="mt-3 text-lg font-semibold text-text">
+                {card.title}
+              </h3>
+              <p className="mt-3 text-sm leading-7 text-muted">
+                {card.description}
+              </p>
             </div>
           ))}
         </div>

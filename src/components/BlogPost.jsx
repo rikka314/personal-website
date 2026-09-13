@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, ArrowRight, CalendarDays, Clock3 } from 'lucide-react'
+import {
+  ArrowLeft,
+  ArrowRight,
+  CalendarDays,
+  Clock3,
+  ChevronDown,
+} from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import GiscusComments from './GiscusComments'
 import MarkdownContent from './MarkdownContent'
@@ -13,6 +19,7 @@ export default function BlogPost() {
   const [post, setPost] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
+  const [tocOpen, setTocOpen] = useState(false)
 
   const copy =
     locale === 'zh'
@@ -22,7 +29,8 @@ export default function BlogPost() {
           comments: '评论',
           loadingBody: '正在加载文章内容与目录。',
           loadingLabel: '加载中',
-          missingBody: '没有找到对应的运行时文章数据，请检查发布后的文章 JSON 是否存在。',
+          missingBody:
+            '没有找到对应的运行时文章数据，请检查发布后的文章 JSON 是否存在。',
           missingLabel: '文章不可用',
           missingTitle: '这篇文章暂时无法加载。',
           next: '下一篇',
@@ -107,7 +115,9 @@ export default function BlogPost() {
         <div className="page-shell">
           <div className="panel p-8">
             <p className="tiny-label">{copy.loadingLabel}</p>
-            <p className="mt-3 text-base leading-7 text-muted">{copy.loadingBody}</p>
+            <p className="mt-3 text-base leading-7 text-muted">
+              {copy.loadingBody}
+            </p>
           </div>
         </div>
       </section>
@@ -120,10 +130,14 @@ export default function BlogPost() {
         <div className="page-shell">
           <div className="panel p-8">
             <p className="tiny-label">{copy.missingLabel}</p>
-            <h1 className="mt-3 text-3xl font-semibold text-text">{copy.missingTitle}</h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-muted">{copy.missingBody}</p>
+            <h1 className="mt-3 text-3xl font-semibold text-text">
+              {copy.missingTitle}
+            </h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-muted">
+              {copy.missingBody}
+            </p>
             <Link className="button-secondary mt-6" to="/blog" viewTransition>
-              <ArrowLeft size={16} />
+              <ArrowLeft size={16} aria-hidden="true" />
               {copy.back}
             </Link>
           </div>
@@ -135,32 +149,42 @@ export default function BlogPost() {
   return (
     <section className="section-shell">
       <div className="page-shell">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
-          <div className="min-w-0">
+        <div className="article-layout">
+          <div className="article-main">
             <Link className="button-secondary" to="/blog" viewTransition>
-              <ArrowLeft size={16} />
+              <ArrowLeft size={16} aria-hidden="true" />
               {copy.back}
             </Link>
 
-            <header className="mt-6 panel p-7 md:p-8">
+            <header className="article-heading">
               <p className="eyebrow">{copy.article}</p>
-              <h1 className="mt-3 text-4xl leading-tight text-text md:text-5xl">{post.title}</h1>
+              <h1 className="mt-3 text-4xl leading-tight text-text md:text-5xl">
+                {post.title}
+              </h1>
               {post.excerpt ? (
-                <p className="mt-4 max-w-3xl text-base leading-8 text-muted">{post.excerpt}</p>
+                <p className="mt-4 max-w-3xl text-base leading-8 text-muted">
+                  {post.excerpt}
+                </p>
               ) : null}
 
               <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-muted">
                 <span className="inline-flex items-center gap-2">
-                  <CalendarDays size={15} />
+                  <CalendarDays size={15} aria-hidden="true" />
                   {formatBlogDate(post.publishedAt, locale)}
                 </span>
                 <span className="inline-flex items-center gap-2">
-                  <Clock3 size={15} />
+                  <Clock3 size={15} aria-hidden="true" />
                   {post.readingTime}
                 </span>
                 <span className="chip chip-ghost">{post.languageLabel}</span>
-                <span className="chip chip-ghost">{post.typeLabels[locale]}</span>
-                <Link className="blog-inline-link" to={`/blog/columns/${post.column}`} viewTransition>
+                <span className="chip chip-ghost">
+                  {post.typeLabels[locale]}
+                </span>
+                <Link
+                  className="blog-inline-link"
+                  to={`/blog/columns/${post.column}`}
+                  viewTransition
+                >
                   {columnLabel}
                 </Link>
               </div>
@@ -178,12 +202,19 @@ export default function BlogPost() {
 
             {post.coverImage ? (
               <div className="panel mt-6 overflow-hidden">
-                <img alt={post.title} className="blog-cover-image" src={post.coverImage} />
+                <img
+                  alt={post.title}
+                  className="blog-cover-image"
+                  src={post.coverImage}
+                />
               </div>
             ) : null}
 
-            <article className="panel mt-6 p-7 md:p-10">
-              <MarkdownContent markdown={post.contentMarkdown} />
+            <article className="article-body">
+              <MarkdownContent
+                markdown={post.contentMarkdown}
+                headings={post.toc}
+              />
             </article>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -195,13 +226,13 @@ export default function BlogPost() {
                 >
                   <div>
                     <p className="tiny-label">{copy.previous}</p>
-                    <p className="mt-2 text-base font-semibold text-text">{post.previous.title}</p>
+                    <p className="mt-2 text-base font-semibold text-text">
+                      {post.previous.title}
+                    </p>
                   </div>
-                  <ArrowLeft size={16} />
+                  <ArrowLeft size={16} aria-hidden="true" />
                 </Link>
-              ) : (
-                <div className="panel opacity-60 p-5" />
-              )}
+              ) : null}
 
               {post.next ? (
                 <Link
@@ -211,19 +242,21 @@ export default function BlogPost() {
                 >
                   <div>
                     <p className="tiny-label">{copy.next}</p>
-                    <p className="mt-2 text-base font-semibold text-text">{post.next.title}</p>
+                    <p className="mt-2 text-base font-semibold text-text">
+                      {post.next.title}
+                    </p>
                   </div>
-                  <ArrowRight size={16} />
+                  <ArrowRight size={16} aria-hidden="true" />
                 </Link>
-              ) : (
-                <div className="panel opacity-60 p-5" />
-              )}
+              ) : null}
             </div>
 
             {post.enableComments ? (
               <section className="panel mt-6 p-7 md:p-8">
                 <p className="tiny-label">{copy.comments}</p>
-                <h2 className="mt-3 text-2xl font-semibold text-text">{copy.comments}</h2>
+                <h2 className="mt-3 text-2xl font-semibold text-text">
+                  {copy.comments}
+                </h2>
                 <div className="mt-6">
                   <GiscusComments term={post.slug} />
                 </div>
@@ -231,27 +264,43 @@ export default function BlogPost() {
             ) : null}
           </div>
 
-          <aside className="panel h-fit p-6 xl:sticky xl:top-28">
-            <p className="tiny-label">{copy.tableOfContents}</p>
-            {post.toc?.length ? (
-              <nav className="mt-4 space-y-2">
-                {post.toc.map((item) => (
-                  <a
-                    key={item.id}
-                    className={`blog-toc-link ${item.level === 3 ? 'blog-toc-link-nested' : ''}`}
-                    href={`#${item.id}`}
-                  >
-                    {item.text}
-                  </a>
-                ))}
-              </nav>
-            ) : (
-              <p className="mt-4 text-sm leading-7 text-muted">
-                {locale === 'zh'
-                  ? '这篇文章目前没有可导航的小节。'
-                  : 'This article does not currently expose navigable headings.'}
-              </p>
-            )}
+          <aside className="article-toc">
+            <p className="tiny-label toc-label">{copy.tableOfContents}</p>
+            <button
+              type="button"
+              className="toc-toggle"
+              aria-expanded={tocOpen}
+              aria-controls="article-toc-content"
+              onClick={() => setTocOpen((open) => !open)}
+            >
+              {copy.tableOfContents}
+              <ChevronDown size={16} aria-hidden="true" />
+            </button>
+            <div
+              id="article-toc-content"
+              className="toc-content"
+              data-open={tocOpen}
+            >
+              {post.toc?.length ? (
+                <nav className="mt-4 space-y-2">
+                  {post.toc.map((item) => (
+                    <a
+                      key={item.id}
+                      className={`blog-toc-link ${item.level === 3 ? 'blog-toc-link-nested' : ''}`}
+                      href={`#${item.id}`}
+                    >
+                      {item.text}
+                    </a>
+                  ))}
+                </nav>
+              ) : (
+                <p className="mt-4 text-sm leading-7 text-muted">
+                  {locale === 'zh'
+                    ? '这篇文章目前没有可导航的小节。'
+                    : 'This article does not currently expose navigable headings.'}
+                </p>
+              )}
+            </div>
           </aside>
         </div>
       </div>

@@ -1,85 +1,69 @@
-import { ArrowUpRight, BarChart3, Bot, Globe } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { getProjects, projectsPageCopy } from '../data/projects'
 import { useLocale } from '../context/useLocale'
-
-const iconMap = {
-  'bar-chart-3': BarChart3,
-  bot: Bot,
-  globe: Globe,
-}
 
 export default function Projects() {
   const { locale } = useLocale()
   const copy = projectsPageCopy[locale]
-  const items = getProjects(locale)
-
   return (
     <section className="section-shell">
       <div className="page-shell">
-        <div className="section-header">
-          <p className="eyebrow">{copy.eyebrow}</p>
-          <h2 className="section-title">{copy.sectionTitle}</h2>
-          <p className="section-copy">{copy.sectionCopy}</p>
-        </div>
-
-        <div className="grid gap-5 lg:grid-cols-2">
-          {items.map((project) => {
-            const Icon = iconMap[project.iconKey] ?? Globe
-
-            return (
-              <article
-                key={project.id}
-                className={`panel panel-hover p-7 md:p-8 ${
-                  project.featured ? 'lg:col-span-2' : ''
-                }`}
-              >
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="icon-shell h-14 w-14">
-                      <Icon size={22} />
-                    </div>
-                    <div>
-                      <p className="tiny-label">{project.status}</p>
-                      <h3 className="mt-1 text-2xl font-semibold text-text">{project.title}</h3>
-                    </div>
-                  </div>
-                  {project.link ? (
-                    <a
-                      className="button-secondary"
-                      href={project.link}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      {copy.openProject}
-                      <ArrowUpRight size={15} />
-                    </a>
-                  ) : (
-                    <span className="chip">{copy.privateBuild}</span>
-                  )}
+        <header className="section-header">
+          <p className="eyebrow">
+            {locale === 'zh' ? '研究与实践' : 'Research & practice'}
+          </p>
+          <h1 className="page-title">
+            {locale === 'zh' ? '项目选集' : 'Selected projects.'}
+          </h1>
+          <p className="section-copy">{copy.sectionTitle}</p>
+          <p className="mt-4 max-w-3xl text-base leading-8 text-muted">
+            {copy.sectionCopy}
+          </p>
+        </header>
+        {getProjects(locale).map((project, index) => (
+          <article
+            key={project.id}
+            className={`project-entry ${project.featured ? 'project-featured' : ''}`}
+          >
+            <span className="project-number">0{index + 1}</span>
+            <div className="min-w-0">
+              <p className="tiny-label">{project.status}</p>
+              <h2 className="project-name">{project.title}</h2>
+              <div className="project-description">
+                <div>
+                  <h3 className="tiny-label">{copy.summaryLabel}</h3>
+                  <p className="mt-3">{project.summary}</p>
                 </div>
-
-                <div className="mt-6 grid gap-6 md:grid-cols-2">
-                  <div>
-                    <p className="tiny-label">{copy.summaryLabel}</p>
-                    <p className="mt-3 text-sm leading-7 text-muted">{project.summary}</p>
-                  </div>
-                  <div>
-                    <p className="tiny-label">{copy.outcomeLabel}</p>
-                    <p className="mt-3 text-sm leading-7 text-muted">{project.outcome}</p>
-                  </div>
+                <div>
+                  <h3 className="tiny-label">{copy.outcomeLabel}</h3>
+                  <p className="mt-3">{project.outcome}</p>
                 </div>
-
-                <div className="mt-6 flex flex-wrap gap-2">
+              </div>
+              <div className="project-footer">
+                <div className="flex flex-wrap gap-3">
                   {project.stack.map((item) => (
-                    <span key={item} className="chip">
+                    <span className="chip" key={item}>
                       {item}
                     </span>
                   ))}
                 </div>
-              </article>
-            )
-          })}
-        </div>
+                {project.link ? (
+                  <a
+                    className="text-link"
+                    href={project.link}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {copy.openProject}
+                    <ArrowUpRight size={16} aria-hidden="true" />
+                  </a>
+                ) : (
+                  <span className="tiny-label">{copy.privateBuild}</span>
+                )}
+              </div>
+            </div>
+          </article>
+        ))}
       </div>
     </section>
   )

@@ -8,18 +8,19 @@
     "build": "vite build",
     "build:blog-runtime": "node scripts/build-blog-runtime.mjs",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "preview:editorial": "node scripts/preview-editorial.mjs",
+    "test:editorial": "node --test scripts/editorial.test.mjs"
   },
   "dependencies": {
-    "katex": "^0.16.25",
     "gray-matter": "^4.0.3",
+    "katex": "^0.16.25",
     "lucide-react": "^0.575.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.13.1",
     "react-syntax-highlighter": "^15.6.6",
-    "react-type-animation": "^3.2.0",
     "rehype-katex": "^7.0.1",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",

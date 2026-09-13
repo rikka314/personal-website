@@ -27,7 +27,10 @@ export function ThemeProvider({ children }) {
 
     const metaTheme = document.querySelector('meta[name="theme-color"]')
     if (metaTheme) {
-      metaTheme.setAttribute('content', theme === 'dark' ? '#0e0c0a' : '#f4efe7')
+      metaTheme.setAttribute(
+        'content',
+        theme === 'dark' ? '#18191b' : '#fafaf8',
+      )
     }
   }, [theme])
 
@@ -43,7 +46,10 @@ export function ThemeProvider({ children }) {
       setThemeState(resolvedTheme)
     }
 
-    if (typeof document.startViewTransition !== 'function') {
+    if (
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      typeof document.startViewTransition !== 'function'
+    ) {
       startTransition(applyTheme)
       return
     }

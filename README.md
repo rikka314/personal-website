@@ -113,3 +113,17 @@ The activation script:
 2. Import a local Markdown file plus related images through the dashboard.
 
 Published runtime JSON is rebuilt by the admin API after create, update, publish, unpublish, delete, and import actions.
+
+## Editorial design preview
+
+The public site and writing surface share the typography, color, and interaction rules in `design-system/personal-website/MASTER.md`. The public site uses open editorial sections; the admin editor uses side-by-side Markdown and preview at 1200px and above, with view tabs on smaller screens.
+
+```bash
+npm run dev                 # Actual local site; the default blog seed is empty
+npm run preview:editorial   # Isolated fixture previews: public :5175, admin :5174
+npm run test:editorial      # Markdown heading / table-of-contents regression checks
+```
+
+The fixture previews bind only to `127.0.0.1`, keep sample articles in memory, and do not connect to the production API or library. Restarting the command resets the sample content. The preview admin starts signed in; after logout its local password form accepts any text. This behavior belongs only to the standalone preview script, which is never imported by the application or production build.
+
+Review screenshots and the responsive check results are generated under `artifacts/editorial/`. Production authentication, API paths, article schema, and publishing semantics remain unchanged.
