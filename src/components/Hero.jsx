@@ -44,8 +44,6 @@ export default function Hero() {
           ],
           subtitle:
             '面向 LLM、具身智能与计算机视觉持续构建工程基础的 AI 本科生。',
-          trajectoryBody:
-            '我默认的工作方式是先把系统跑起来，再把它稳定下来：先复现模型、打通数据和部署链路，再整理实验与文档。',
           trajectoryLabel: '当前方向',
           trajectoryTitle: '研究导向的工程训练',
           academicBody:
@@ -89,8 +87,6 @@ export default function Hero() {
           ],
           subtitle:
             'AI undergraduate building research-ready engineering depth in LLMs, embodied AI, and computer vision.',
-          trajectoryBody:
-            'My default workflow is to make systems run first and stabilize them next: reproduce models, wire data and deployment paths, and then tighten the experimental story.',
           trajectoryLabel: 'Current trajectory',
           trajectoryTitle: 'Research-oriented engineering',
           academicBody:
@@ -151,7 +147,6 @@ export default function Hero() {
             <h2 className="chapter-heading">{copy.trajectoryTitle}</h2>
           </div>
           <div className="chapter-body">
-            <p>{copy.trajectoryBody}</p>
             <ol className="experience-list">
               {copy.strengths.map((item) => (
                 <li key={item}>

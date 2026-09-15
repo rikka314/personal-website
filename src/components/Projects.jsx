@@ -15,10 +15,6 @@ export default function Projects() {
           <h1 className="page-title">
             {locale === 'zh' ? '项目选集' : 'Selected projects.'}
           </h1>
-          <p className="section-copy">{copy.sectionTitle}</p>
-          <p className="mt-4 max-w-3xl text-base leading-8 text-muted">
-            {copy.sectionCopy}
-          </p>
         </header>
         {getProjects(locale).map((project, index) => (
           <article

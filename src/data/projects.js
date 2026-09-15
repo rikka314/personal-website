@@ -28,34 +28,6 @@ const projectCatalog = [
     },
   },
   {
-    id: 'fingpt-sentiment-reproduction',
-    iconKey: 'bot',
-    featured: false,
-    link: null,
-    status: {
-      en: 'Independent study',
-      zh: '独立复现',
-    },
-    translations: {
-      en: {
-        title: 'FinGPT financial sentiment reproduction',
-        summary:
-          'A local reproduction of the FinGPT v3 sentiment workflow in WSL/Ubuntu, including 4-bit QLoRA fine-tuning on Financial PhraseBank and inference through both Hugging Face and Ollama backends.',
-        outcome:
-          'This project gave me direct experience with GPU environment setup, lightweight fine-tuning, local model execution, and benchmark-style evaluation using weighted F1.',
-        stack: ['WSL/Ubuntu', 'QLoRA', 'Llama-2-7B', 'Ollama'],
-      },
-      zh: {
-        title: 'FinGPT 金融情感分析复现',
-        summary:
-          '在 WSL/Ubuntu 环境中本地复现 FinGPT v3 情感分析流程，包含 Financial PhraseBank 上的 4-bit QLoRA 微调，以及 Hugging Face 与 Ollama 双后端推理。',
-        outcome:
-          '这部分工作让我真正接触到 GPU 环境配置、轻量微调、本地模型运行和加权 F1 评测，工程理解比只看 notebook 更扎实。',
-        stack: ['WSL/Ubuntu', 'QLoRA', 'Llama-2-7B', 'Ollama'],
-      },
-    },
-  },
-  {
     id: 'shipping-simulation-game',
     iconKey: 'globe',
     featured: false,
@@ -88,9 +60,6 @@ const projectCatalog = [
 export const projectsPageCopy = {
   en: {
     eyebrow: 'Projects',
-    sectionTitle: 'Projects that show how I turn research interests into runnable systems.',
-    sectionCopy:
-      'The portfolio is still early-stage, but it already reflects my working pattern clearly: reproduce models, build usable tools, deploy systems, and learn by making technical edges concrete.',
     openProject: 'Open project',
     privateBuild: 'Private build',
     summaryLabel: 'Project summary',
@@ -98,9 +67,6 @@ export const projectsPageCopy = {
   },
   zh: {
     eyebrow: '项目',
-    sectionTitle: '这些项目基本构成了我当前的工程画像。',
-    sectionCopy:
-      '我的项目还处在早期阶段，但已经能比较准确地反映我的工作方式：复现模型、做可用工具、部署系统，并把研究兴趣落实到真正能运行的实现上。',
     openProject: '打开项目',
     privateBuild: '未公开项目',
     summaryLabel: '项目简介',

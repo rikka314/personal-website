@@ -44,7 +44,7 @@ export default function About() {
           intro1:
             '我当前最明确的研究兴趣是大语言模型、具身智能和计算机视觉。相比只停留在课程层面，我更希望通过复现和搭建具体系统，尽早进入真实的研究工作流。',
           intro2:
-            '这也是我为什么会做 FinGPT 本地复现和量化金融平台。前者让我在 WSL/Ubuntu 环境里跑通 Llama-2-7B + 4-bit QLoRA 微调、FPB 数据集评测和双后端推理；后者则让我把 AkShare 数据、10 因子评分、Walk-Forward 回测和参数优化组织成可在线使用的 Streamlit 应用。',
+            '我开发的 Strategy 量化金融分析平台，将 AkShare 数据、10 因子评分、Walk-Forward 回测和参数优化整合为可在线使用的 Streamlit 应用，并部署在 Ubuntu 云服务器上。这个项目让我练习了从数据处理、策略评估到系统部署的完整流程，也让我更具体地理解如何把分析想法变成可用的研究工具。',
           intro3:
             '除此之外，我还协作开发过带 Tkinter 界面和 MySQL 持久化的航运模拟游戏，并在 MCM 中完成过建模、敏感性分析和论文写作。这些经历让我对系统拆解、实验记录和工程交付形成了更具体的判断。',
           sectionTitle: '一个已经开始把研究兴趣变成系统和实验的 AI 本科生。',
@@ -59,7 +59,7 @@ export default function About() {
           intro1:
             'My clearest current research interests are large language models, embodied AI, and computer vision. Rather than keeping them at the level of coursework alone, I want to enter real research workflows by reproducing and building concrete systems.',
           intro2:
-            'That is why I spent time on both a local FinGPT reproduction and a quantitative finance platform. The first pushed me through Llama-2-7B 4-bit QLoRA fine-tuning, FPB evaluation, and dual-backend inference in WSL/Ubuntu; the second turned AkShare data, 10-factor scoring, walk-forward backtesting, and parameter optimization into a usable Streamlit application.',
+            'I built Strategy, a quantitative finance analysis platform that brings AkShare data, 10-factor scoring, walk-forward backtesting, and parameter optimization into an online Streamlit application deployed on an Ubuntu cloud server. The project gave me practice across data processing, strategy evaluation, and deployment, and helped me understand how to turn analytical ideas into usable research tools.',
           intro3:
             'I also co-developed a shipping simulation game with a Tkinter interface and MySQL persistence, and I used MCM to practice modeling, sensitivity analysis, and technical writing. Together, those experiences gave me a more concrete sense of system decomposition, experiment tracking, and disciplined delivery.',
           sectionTitle:
